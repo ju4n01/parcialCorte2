@@ -2,41 +2,40 @@ package com.example.equipoFutbol.Controller;
 
 import com.example.equipoFutbol.Model.Entrenador;
 import com.example.equipoFutbol.Service.EntrenadorService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/entrenadores")
-@RequiredArgsConstructor
+@RequestMapping("/entrenador")
 public class EntrenadorController {
     private final EntrenadorService entrenadorService;
 
-    @GetMapping
-    public List<Entrenador> getAll() {
-        return entrenadorService.findAll();
+    public EntrenadorController(EntrenadorService entrenadorService) {
+        this.entrenadorService = entrenadorService;
     }
 
-    @GetMapping("/{id}")
-    public Entrenador getById(@PathVariable Long id) {
-        return entrenadorService.findById(id).orElse(null);
+    @PostMapping("/guardar")
+    public ResponseEntity<Entrenador> guardarEntrenador(@RequestBody Entrenador entrenador) {
+        return ResponseEntity.ok(entrenadorService.guardar(entrenador));
     }
 
-    @PostMapping
-    public Entrenador create(@RequestBody Entrenador entrenador) {
-        return entrenadorService.save(entrenador);
+    @GetMapping("/listar")
+    public ResponseEntity<List<Entrenador>> listarEntrenador() {
+        return ResponseEntity.ok(entrenadorService.listar());
     }
 
-    @PutMapping("/{id}")
-    public Entrenador update(@PathVariable Long id, @RequestBody Entrenador entrenador) {
-        //entrenador.setId(id); BUG?
-        entrenador.setIdEntrenador(id);
-        return entrenadorService.save(entrenador);
+    @GetMapping("/listar/{id_entrenador}")
+    public ResponseEntity<Entrenador> obtenerEntrenadorPorId(@PathVariable long id_entrenador) {
+        return entrenadorService.listarPorId(id_entrenador)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        entrenadorService.deleteById(id);
+    @DeleteMapping("/eliminar/{id_entrenador}")
+    public ResponseEntity<Void> eliminarEntrenador(@PathVariable long id_entrenador) {
+        entrenadorService.eliminar(id_entrenador);
+        return ResponseEntity.noContent().build();
     }
 }

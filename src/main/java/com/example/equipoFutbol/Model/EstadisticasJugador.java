@@ -17,7 +17,7 @@ public class EstadisticasJugador {
     private Long idEstadisticas;
 
     @ManyToOne
-    @JoinColumn(name = "id_jugafor")
+    @JoinColumn(name = "id_jugador")
     private Jugador jugador;
 
     @ManyToOne

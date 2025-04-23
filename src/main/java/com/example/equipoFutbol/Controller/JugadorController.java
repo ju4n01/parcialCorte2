@@ -2,41 +2,50 @@ package com.example.equipoFutbol.Controller;
 
 import com.example.equipoFutbol.Model.Jugador;
 import com.example.equipoFutbol.Service.JugadorService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/jugadores")
-@RequiredArgsConstructor
+@RequestMapping("/jugador")
 public class JugadorController {
     private final JugadorService jugadorService;
 
-    @GetMapping
-    public List<Jugador> getAll() {
-        return jugadorService.findAll();
+    public JugadorController(JugadorService jugadorService) {
+        this.jugadorService = jugadorService;
     }
 
-    @GetMapping("/{id}")
-    public Jugador getById(@PathVariable Long id) {
-        return jugadorService.findById(id).orElse(null);
+    @PostMapping("/guardar")
+    public ResponseEntity<Jugador> guardarJugador(@RequestBody Jugador jugador) {
+        return ResponseEntity.ok(jugadorService.guardar(jugador));
     }
 
-    @PostMapping
-    public Jugador create(@RequestBody Jugador jugador) {
-        return jugadorService.save(jugador);
+    @GetMapping("/listar")
+    public ResponseEntity<List<Jugador>> listarJugador() {
+        return ResponseEntity.ok(jugadorService.listar());
     }
 
-    @PutMapping("/{id}")
-    public Jugador update(@PathVariable Long id, @RequestBody Jugador jugador) {
-        //jugador.setId(id); BUG?
-        jugador.setIdJugador(id);
-        return jugadorService.save(jugador);
+    @GetMapping("/listar/{id_jugador}")
+    public ResponseEntity<Jugador> obtenerJugadorPorId(@PathVariable long id_jugador) {
+        return jugadorService.listarPorId(id_jugador)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        jugadorService.deleteById(id);
+    @DeleteMapping("/eliminar/{id_jugador}")
+    public ResponseEntity<Void> eliminarJugador(@PathVariable long id_jugador) {
+        jugadorService.eliminar(id_jugador);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/jugador_por_equipo/{id_equipo}")
+    public List<Jugador> getJugadoresPorEquipo(@PathVariable Long id_equipo) {
+        return jugadorService.JugadoresporEquipo(id_equipo);
+    }
+
+    @GetMapping("/jugador_mas_X_goles/{goles}")
+    public List<Jugador> getJugadoresConMasDeXGoles(@PathVariable int goles) {
+        return jugadorService.JugadoresConMasDeXGoles(goles);
     }
 }

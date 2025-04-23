@@ -2,41 +2,40 @@ package com.example.equipoFutbol.Controller;
 
 import com.example.equipoFutbol.Model.EstadisticasJugador;
 import com.example.equipoFutbol.Service.EstadisticasJugadorService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/estadisticas-jugador")
-@RequiredArgsConstructor
+@RequestMapping("/estadisticas")
 public class EstadisticasJugadorController {
     private final EstadisticasJugadorService estadisticasJugadorService;
 
-    @GetMapping
-    public List<EstadisticasJugador> getAll() {
-        return estadisticasJugadorService.findAll();
+    public EstadisticasJugadorController(EstadisticasJugadorService estadisticasJugadorService) {
+        this.estadisticasJugadorService = estadisticasJugadorService;
     }
 
-    @GetMapping("/{id}")
-    public EstadisticasJugador getById(@PathVariable Long id) {
-        return estadisticasJugadorService.findById(id).orElse(null);
+    @PostMapping("/guardar")
+    public ResponseEntity<EstadisticasJugador> guardarEstadisticas(@RequestBody EstadisticasJugador estadisticasJugador) {
+        return ResponseEntity.ok(estadisticasJugadorService.guardar(estadisticasJugador));
     }
 
-    @PostMapping
-    public EstadisticasJugador create(@RequestBody EstadisticasJugador estadistica) {
-        return estadisticasJugadorService.save(estadistica);
+    @GetMapping("/listar")
+    public ResponseEntity<List<EstadisticasJugador>> listarEstadisticas() {
+        return ResponseEntity.ok(estadisticasJugadorService.listar());
     }
 
-    @PutMapping("/{id}")
-    public EstadisticasJugador update(@PathVariable Long id, @RequestBody EstadisticasJugador estadistica) {
-        //estadistica.setId(id); BUG ?
-        estadistica.setIdEstadisticas(id);
-        return estadisticasJugadorService.save(estadistica);
+    @GetMapping("/listar/{id_estadisticas}")
+    public ResponseEntity<EstadisticasJugador> obtenerEstadisticasPorId(@PathVariable long id_estadisticas) {
+        return estadisticasJugadorService.listarPorId(id_estadisticas)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        estadisticasJugadorService.deleteById(id);
+    @DeleteMapping("/eliminar/{id_estadisticas}")
+    public ResponseEntity<Void> eliminarEstadisticas(@PathVariable long id_estadisticas) {
+        estadisticasJugadorService.eliminar(id_estadisticas);
+        return ResponseEntity.noContent().build();
     }
 }

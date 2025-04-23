@@ -2,41 +2,40 @@ package com.example.equipoFutbol.Controller;
 
 import com.example.equipoFutbol.Model.Equipo;
 import com.example.equipoFutbol.Service.EquipoService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/equipos")
-@RequiredArgsConstructor
+@RequestMapping("/equipo")
 public class EquipoController {
     private final EquipoService equipoService;
 
-    @GetMapping
-    public List<Equipo> getAll() {
-        return equipoService.findAll();
+    public EquipoController(EquipoService equipoService) {
+        this.equipoService = equipoService;
     }
 
-    @GetMapping("/{id}")
-    public Equipo getById(@PathVariable Long id) {
-        return equipoService.findById(id).orElse(null);
+    @PostMapping("/guardar")
+    public ResponseEntity<Equipo> guardarEquipo(@RequestBody Equipo equipo) {
+        return ResponseEntity.ok(equipoService.guardar(equipo));
     }
 
-    @PostMapping
-    public Equipo create(@RequestBody Equipo equipo) {
-        return equipoService.save(equipo);
+    @GetMapping("/listar")
+    public ResponseEntity<List<Equipo>> listarEquipo() {
+        return ResponseEntity.ok(equipoService.listar());
     }
 
-    @PutMapping("/{id}")
-    public Equipo update(@PathVariable Long id, @RequestBody Equipo equipo) {
-        //equipo.setId(id); BUG?
-        equipo.setIdEquipo(id);
-        return equipoService.save(equipo);
+    @GetMapping("/listar/{id_equipo}")
+    public ResponseEntity<Equipo> obtenerEquipoPorId(@PathVariable long id_equipo) {
+        return equipoService.listarPorId(id_equipo)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        equipoService.deleteById(id);
+    @DeleteMapping("/eliminar/{id_equipo}")
+    public ResponseEntity<Void> eliminarEquipo(@PathVariable long id_equipo) {
+        equipoService.eliminar(id_equipo);
+        return ResponseEntity.noContent().build();
     }
 }

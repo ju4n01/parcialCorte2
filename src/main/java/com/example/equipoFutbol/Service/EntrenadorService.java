@@ -2,30 +2,55 @@ package com.example.equipoFutbol.Service;
 
 import com.example.equipoFutbol.Model.Entrenador;
 import com.example.equipoFutbol.Repository.EntrenadorRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class EntrenadorService {
-     private final EntrenadorRepository entrenadorRepository;
+    private final EntrenadorRepository entrenadorRepository;
 
-    public List<Entrenador> findAll() {
-        return entrenadorRepository.findAll();
+    public EntrenadorService(EntrenadorRepository entrenadorRepository) {
+        this.entrenadorRepository = entrenadorRepository;
     }
 
-    public Optional<Entrenador> findById(Long id) {
-        return entrenadorRepository.findById(id);
+    public Entrenador guardar(Entrenador entrenador) {
+        try {
+            return entrenadorRepository.save(entrenador);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al guardar la información del entrenador" + e.getMessage(), e);
+        }
     }
 
-    public Entrenador save(Entrenador entrenador) {
-        return entrenadorRepository.save(entrenador);
+    public List<Entrenador> listar(){
+        try {
+            return entrenadorRepository.findAll();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al listar todos los entrenadores" + e.getMessage(), e);
+        }
     }
 
-    public void deleteById(Long id) {
-        entrenadorRepository.deleteById(id);
+    public void eliminar(Long id_entrenador){
+        try {
+            if (!entrenadorRepository.existsById(id_entrenador)) {
+                throw new IllegalArgumentException("No se encontró un entrenador con el ID " + id_entrenador);
+            }
+            entrenadorRepository.deleteById(id_entrenador);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al eliminar el entrenador" + e.getMessage(), e);
+        }
+    }
+
+    public Optional<Entrenador> listarPorId(long id_entrenador) {
+        try {
+            Optional<Entrenador> entrenador = entrenadorRepository.findById(id_entrenador);
+            if (entrenador.isEmpty()) {
+                throw new IllegalArgumentException("Entrenador con ID " + id_entrenador + " no encontrado.");
+            }
+            return entrenador;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al buscar entrenador por ID" + e.getMessage(), e);
+        }
     }
 }
