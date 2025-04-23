@@ -1,4 +1,4 @@
-package Model;
+package com.example.equipoFutbol.Model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,6 +30,7 @@ public class Equipo {
     @OneToMany(mappedBy = "equipo", cascade = CascadeType.ALL)
     private List<Entrenador> entrenadores;
 
+    // Relación 3: Equipo local y equipo visitante
     @OneToMany(mappedBy = "equipoLocal", cascade = CascadeType.ALL)
     private List<Partido> partidosComoLocal;
 

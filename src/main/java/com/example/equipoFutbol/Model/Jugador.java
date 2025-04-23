@@ -1,4 +1,4 @@
-package Model;
+package com.example.equipoFutbol.Model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,6 +27,8 @@ public class Jugador {
 
     private String nacionalidad;
 
+    // Relación 1: jugador pertenece a un equipo, relación bidireccional con List<Jugador> en Equipo
+    // Relación 2: Un ntrenador pertenece a un equipo
     @ManyToOne
     @JoinColumn(name = "id_equipo")
     private Equipo equipo;
